@@ -1,0 +1,276 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Namy e Rallyd</title>
+  <style>
+    body {
+      background-color: #111;
+      color: white;
+      font-family: 'Arial', sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+    img {
+      width: 300px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+    h1 {
+      color: #e63946;
+      margin-bottom: 0;
+    }
+    h2 {
+      font-weight: normal;
+      margin-top: 5px;
+      font-size: 20px;
+    }
+    .contador {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 30px;
+      gap: 10px;
+    }
+    .tempo {
+      background: #222;
+      padding: 20px;
+      border-radius: 10px;
+      width: 100px;
+    }
+    .tempo span {
+      display: block;
+      font-size: 24px;
+      font-weight: bold;
+    }
+    .label {
+      font-size: 14px;
+      margin-top: 5px;
+      color: #ccc;
+    }
+    .data-inicio {
+      margin-top: 30px;
+      color: #aaa;
+    }
+    {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
+
+    h2 {
+      margin-top: 20px;
+    }
+
+    .slideshow-container {
+      position: relative;
+      max-width: 300px;
+      margin: 40px auto;
+      overflow: hidden;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.2);
+    }
+
+    .slide {
+      position: absolute;
+      width: 100%;
+      opacity: 0;
+      transition: opacity 1s ease-in-out;
+    }
+
+    .slide img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .slide.active {
+      opacity: 1;
+      position: relative;
+    }
+
+    .nav-button {
+      cursor: pointer;
+      position: absolute;
+      top: 92%;
+      transform: translateY(-50%);
+      padding: 16px;
+      color: white;
+      font-weight: bold;
+      font-size: 18px;
+      background-color: rgba(0,0,0,0.5);
+      border: none;
+      border-radius: 5px;
+      user-select: none;
+      z-index: 2;
+    }
+
+    .prev {
+      left: 10px;
+    }
+
+    .next {
+      right: 10px;
+    }
+
+    .dots-container {
+      text-align: center;
+      margin-top: 15px;
+    }
+
+    .dot {
+      display: inline-block;
+      height: 15px;
+      width: 15px;
+      margin: 0 5px;
+      background-color: #bbb;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .dot.active {
+      background-color: #717171;
+    }
+  </style>
+</head>
+<body>
+   <h1>♥ Naiumy e Rallyd ♥</h1>
+  <div class="slideshow-container">
+
+    <div class="slide active">
+      <img src="foto 1.jpg" alt="Foto 1">
+    </div>
+
+    <div class="slide">
+      <img src="foto 2.jpg" alt="Foto 2">
+    </div>
+
+    <div class="slide">
+      <img src="foto 3.webp" alt="Foto 3">
+    </div>
+
+<div class="slide">
+  <img src="foto 4.webp" alt="Foto 4">
+</div>
+
+<div class="slide">
+  <img src="foto 5.webp" alt="Foto 5">
+</div>
+
+<div class="slide">
+  <img src="foto 6.jpg" alt="Foto 6">
+</div>
+
+<div class="slide">
+  <img src="foto 7.webp" alt="Foto 7">
+</div>
+
+<div class="slide">
+  <img  src="foto 8.jpg" alt="Foto 8">
+</div>
+
+<div  class="slide">
+  <img src="foto 9.webp" alt="Foto 9">
+</div>
+
+<div class="slide">
+  <img src="foto 10.jpg" alt="Foto 10">
+</div>
+
+    <button class="nav-button prev" onclick="changeSlide(-1)">&#10094;</button>
+    <button class="nav-button next" onclick="changeSlide(1)">&#10095;</button>
+  </div>
+
+  <div class="dots-container">
+    <span class="dot active" onclick="setSlide(0)"></span>
+    <span class="dot" onclick="setSlide(1)"></span>
+    <span class="dot" onclick="setSlide(2)"></span>
+    <span class="dot" onclick="setSlide(3)"></span>
+    <span class="dot" onclick="setSlide(4)"></span>
+    <span class="dot" onclick="setSlide(5)"></span>
+    <span class="dot" onclick="setSlide(6)"></span>
+    <span class="dot" onclick="setSlide(7)"></span>
+    <span class="dot" onclick="setSlide(8)"></span>
+    <span class="dot" onclick="setSlide(9)"></span>
+  </div>
+
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    const dots = document.querySelectorAll('.dot');
+    let currentIndex = 0;
+
+    function showSlide(index) {
+      slides.forEach((slide, i) => {
+        slide.classList.remove('active');
+        dots[i].classList.remove('active');
+      });
+
+      slides[index].classList.add('active');
+      dots[index].classList.add('active');
+    }
+
+    function changeSlide(n) {
+      currentIndex += n;
+      if (currentIndex >= slides.length) currentIndex = 0;
+      if (currentIndex < 0) currentIndex = slides.length - 1;
+      showSlide(currentIndex);
+    }
+
+    function setSlide(index) {
+      currentIndex = index;
+      showSlide(currentIndex);
+    }
+  </script>
+  <h2>Meu amor! Que a gente continue se escolhendo todos os dias, com carinho, com riso fácil e com aquele abraço que sempre cabe o mundo inteiro. Amar você é a melhor parte da minha vida, e hoje eu só quero celebrar a sorte de te ter ao meu lado. Te amo!</h2>
+
+  
+  <p class="data-inicio">Desde 27 de fevereiro de 2023</p>
+
+  <h3>Compartilhando momentos há</h3>
+
+  <div class="contador" id="contador">
+  </div>
+
+  <script>
+    const inicio = new Date('2023-02-27T00:00:00');
+    const contagem = document.getElementById('contador');
+
+    function atualizarContador() {
+      const agora = new Date();
+      let tempo = Math.floor((agora - inicio) / 1000);
+
+      const anos = Math.floor(tempo / (365.25 * 24 * 3600));
+      tempo -= anos * 365.25 * 24 * 3600;
+
+      const meses = Math.floor(tempo / (30.44 * 24 * 3600));
+      tempo -= meses * 30.44 * 24 * 3600;
+
+      const dias = Math.floor(tempo / (24 * 3600));
+      tempo -= dias * 24 * 3600;
+
+      const horas = Math.floor(tempo / 3600);
+      tempo -= horas * 3600;
+
+      const minutos = Math.floor(tempo / 60);
+      const segundos = tempo % 60;
+
+      contagem.innerHTML = `
+        <div class="tempo"><span>${String(anos).padStart(2, '0')}</span><div class="label">anos</div></div>
+        <div class="tempo"><span>${String(meses).padStart(2, '0')}</span><div class="label">meses</div></div>
+        <div class="tempo"><span>${String(dias).padStart(2, '0')}</span><div class="label">dias</div></div>
+        <div class="tempo"><span>${String(horas).padStart(2, '0')}</span><div class="label">horas</div></div>
+        <div class="tempo"><span>${String(minutos).padStart(2, '0')}</span><div class="label">minutos</div></div>
+        <div class="tempo"><span>${String(segundos).padStart(2, '0')}</span><div class="label">segundos</div></div>
+      `;
+    }
+
+    atualizarContador();
+    setInterval(atualizarContador, 1000);
+  </script>
+</body>
+</html>
