@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Naiumy e Rallyd</title>
+    <!-- Google Fonts for a nicer look -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #121212;
+            --text-color: #e0e0e0;
+            --primary-color: #e63946;
+            --card-bg-color: #1e1e1e;
+            --card-shadow: rgba(0, 0, 0, 0.4);
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Montserrat', sans-serif;
+            text-align: center;
+            padding: 20px 20px 100px 20px; /* Adjusted padding-bottom for music player */
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            -webkit-tap-highlight-color: transparent; /* Removes blue tap highlight on mobile */
+        }
+
+        .main-container {
+            max-width: 600px;
+            width: 100%;
+            z-index: 10; /* Ensure main content is above hearts */
+        }
+        
+        h1 {
+            font-family: 'Playfair Display', serif;
+            color: var(--primary-color);
+            font-size: clamp(2rem, 8vw, 2.5rem); /* Fluid font size */
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            font-weight: normal;
+            font-size: clamp(1rem, 4vw, 1.1rem); /* Fluid font size */
+            line-height: 1.6;
+            max-width: 500px;
+            margin: 30px auto;
+        }
+        
+        h3 {
+             margin-top: 40px;
+             font-weight: normal;
+             color: #ccc;
+        }
+
+        /* --- Hearts Animation --- */
+        #hearts-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .heart {
+            position: absolute;
+            font-size: 2rem;
+            color: var(--primary-color);
+            animation: fall 10s linear forwards;
+            user-select: none;
+        }
+
+        @keyframes fall {
+            from {
+                top: -10%;
+                opacity: 1;
+                transform: translateY(0) rotate(0);
+            }
+            to {
+                top: 110%;
+                opacity: 0.5;
+                transform: translateY(0) rotate(360deg);
+            }
+        }
+
+        /* --- Music Player Styles --- */
+        .music-player-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: rgba(30, 30, 30, 0.9);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            padding: 10px 0;
+            box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            box-sizing: border-box;
+        }
+
+        .player-content {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            max-width: 600px;
+            padding: 0 15px;
+            gap: 15px;
+        }
+        
+        .album-art {
+            width: 50px;
+            height: 50px;
+            flex-shrink: 0;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .album-art img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .song-info {
+            text-align: left;
+            flex-shrink: 0;
+            min-width: 80px;
+            overflow: hidden;
+        }
+
+        .song-title {
+            font-weight: bold;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .song-filename {
+            font-size: 0.8rem;
+            color: #aaa;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .player-controls {
+            flex-shrink: 0;
+        }
+
+        .control-btn {
+            background: none;
+            border: 2px solid var(--text-color);
+            color: var(--text-color);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .control-btn:hover, .control-btn:focus {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            transform: scale(1.1);
+        }
+
+        .control-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: var(--text-color);
+            margin-left: 2px;
+        }
+        
+        #pause-icon {
+            margin-left: 0;
+        }
+
+        .progress-container {
+            display: flex;
+            align-items: center;
+            flex-grow: 1;
+            gap: 10px;
+            color: #aaa;
+            font-size: 0.8rem;
+        }
+
+        #progress-bar-bg {
+            flex-grow: 1;
+            background-color: #555;
+            height: 5px;
+            border-radius: 2.5px;
+            cursor: pointer;
+        }
+
+        #progress-bar-fg {
+            width: 0;
+            height: 100%;
+            background-color: var(--primary-color);
+            border-radius: 2.5px;
+        }
+
+
+        /* --- Slideshow Styles --- */
+        .slideshow-container {
+            position: relative;
+            width: 90%;
+            max-width: 400px;
+            margin: 20px auto;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px var(--card-shadow);
+            touch-action: pan-y;
+            aspect-ratio: 4 / 3;
+        }
+        
+        .slides-wrapper {
+            display: flex;
+            height: 100%;
+            transition: transform 0.5s ease-in-out;
+        }
+
+        .slide {
+            flex: 0 0 100%;
+            height: 100%;
+        }
+        
+        .slide img {
+            width: 100%;
+            height: 100%;
+            display: block;
+            border-radius: 15px;
+            user-select: none;
+            pointer-events: none;
+            object-fit: cover;
+        }
+
+        .nav-button {
+            cursor: pointer;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            padding: 16px 12px;
+            color: white;
+            font-weight: bold;
+            font-size: 24px;
+            background-color: rgba(0, 0, 0, 0.2);
+            border: none;
+            user-select: none;
+            z-index: 2;
+            transition: background-color 0.3s;
+            line-height: 1;
+        }
+        
+        .nav-button:hover {
+            background-color: rgba(0,0,0,0.6);
+        }
+
+        .prev {
+            left: 0;
+            border-radius: 0 10px 10px 0;
+        }
+
+        .next {
+            right: 0;
+            border-radius: 10px 0 0 10px;
+        }
+
+        .dots-container {
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .dot {
+            display: inline-block;
+            height: 12px;
+            width: 12px;
+            margin: 0 5px;
+            background-color: #555;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .dot.active {
+            background-color: var(--primary-color);
+        }
+        
+        /* --- Counter Styles --- */
+        .data-inicio {
+            margin-top: 30px;
+            color: #aaa;
+            font-style: italic;
+        }
+        
+        .contador {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .tempo {
+            background: var(--card-bg-color);
+            padding: 15px 10px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px var(--card-shadow);
+        }
+
+        .tempo span {
+            display: block;
+            font-size: clamp(1.5rem, 6vw, 2rem); /* Fluid font size for counter */
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .label {
+            font-size: 0.7rem;
+            margin-top: 5px;
+            color: #ccc;
+            text-transform: uppercase;
+        }
+        
+        /* --- Mobile Responsiveness --- */
+        @media (max-width: 480px) {
+            body {
+                padding-bottom: 140px; /* More space for player on small screens */
+            }
+            
+            .player-content {
+                display: grid;
+                grid-template-areas:
+                    "art info controls"
+                    "progress progress progress";
+                grid-template-columns: auto 1fr auto;
+                gap: 5px 10px;
+                padding: 0 15px;
+            }
+            .album-art { 
+                grid-area: art;
+                width: 45px;
+                height: 45px;
+            }
+            .song-info { 
+                grid-area: info; 
+                text-align: left;
+            }
+            .player-controls { grid-area: controls; }
+            .progress-container { 
+                grid-area: progress; 
+                width: 100%;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <div id="hearts-container"></div>
+    <audio id="background-music" loop>
+        <!-- Coloque o nome do seu arquivo de música aqui -->
+        <source src="patience.mp3" type="audio/mpeg">
+        Seu navegador não suporta o elemento de áudio.
+    </audio>
+
+    <div class="music-player-container" id="music-player">
+        <div class="player-content">
+            <div class="album-art">
+                <!-- Coloque a imagem da capa do álbum aqui -->
+                <img src="foto album.webp" alt="Capa do Álbum" onerror="this.style.display='none'">
+            </div>
+            <div class="song-info">
+                <div class="song-title">Guns N' Roses</div>
+                <div class="song-filename" id="song-filename-display">patience.mp3</div>
+            </div>
+            <div class="player-controls">
+                <button id="play-pause-btn" class="control-btn">
+                    <svg id="play-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"></path></svg>
+                    <svg id="pause-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" style="display: none;"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"></path></svg>
+                </button>
+            </div>
+            <div class="progress-container">
+                <span id="current-time">0:00</span>
+                <div id="progress-bar-bg">
+                    <div id="progress-bar-fg"></div>
+                </div>
+                <span id="total-duration">0:00</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <h1>♥ Naiumy e Rallyd ♥</h1>
+    
+        <div class="slideshow-container" id="slideshow">
+            <div class="slides-wrapper">
+                 <!-- Images will be injected by JavaScript -->
+            </div>
+            <button class="nav-button prev" onclick="changeSlide(-1)">&#10094;</button>
+            <button class="nav-button next" onclick="changeSlide(1)">&#10095;</button>
+        </div>
+    
+        <div class="dots-container" id="dots">
+            <!-- Dots will be injected by JavaScript -->
+        </div>
+    
+        <h2>Meu amor! Que a gente continue se escolhendo todos os dias, com carinho, com riso fácil e com aquele abraço que sempre cabe o mundo inteiro. Amar você é a melhor parte da minha vida, e hoje eu só quero celebrar a sorte de te ter ao meu lado. Te amo!</h2>
+    
+    
+        <h3>Te Amando há...</h3>
+    
+        <div class="contador" id="contador">
+            <!-- Counter will be rendered here -->
+        </div>
+        <p class="data-inicio">Desde 27 de fevereiro de 2023</p>
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- HEARTS ANIMATION LOGIC ---
+            const heartsContainer = document.getElementById('hearts-container');
+            function createHeart() {
+                const heart = document.createElement('div');
+                heart.classList.add('heart');
+                heart.innerHTML = '♥';
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.animationDuration = (Math.random() * 5 + 5) + 's';
+                heart.style.fontSize = (Math.random() * 1.5 + 1) + 'rem';
+                heartsContainer.appendChild(heart);
+                setTimeout(() => heart.remove(), 10000);
+            }
+            setInterval(createHeart, 300);
+
+            // --- MUSIC LOGIC ---
+            const music = document.getElementById('background-music');
+            const player = document.getElementById('music-player');
+            const playPauseBtn = document.getElementById('play-pause-btn');
+            const playIcon = document.getElementById('play-icon');
+            const pauseIcon = document.getElementById('pause-icon');
+            const songFilenameDisplay = document.getElementById('song-filename-display');
+            const progressBarBg = document.getElementById('progress-bar-bg');
+            const progressBarFg = document.getElementById('progress-bar-fg');
+            const currentTimeDisplay = document.getElementById('current-time');
+            const totalDurationDisplay = document.getElementById('total-duration');
+            
+            const musicSource = music.querySelector('source').getAttribute('src');
+            songFilenameDisplay.textContent = musicSource || 'N/A';
+
+            function togglePlayPause() {
+                if (music.paused) {
+                    music.play();
+                    playIcon.style.display = 'none';
+                    pauseIcon.style.display = 'inline-block';
+                } else {
+                    music.pause();
+                    playIcon.style.display = 'inline-block';
+                    pauseIcon.style.display = 'none';
+                }
+            }
+
+            playPauseBtn.addEventListener('click', togglePlayPause);
+
+            function formatTime(seconds) {
+                if (isNaN(seconds)) return '0:00';
+                const minutes = Math.floor(seconds / 60);
+                const secs = Math.floor(seconds % 60);
+                return `${minutes}:${secs.toString().padStart(2, '0')}`;
+            }
+
+            music.addEventListener('loadedmetadata', () => {
+                totalDurationDisplay.textContent = formatTime(music.duration);
+            });
+
+            music.addEventListener('timeupdate', () => {
+                const progress = (music.currentTime / music.duration) * 100;
+                progressBarFg.style.width = `${progress}%`;
+                currentTimeDisplay.textContent = formatTime(music.currentTime);
+            });
+
+            progressBarBg.addEventListener('click', (e) => {
+                const barWidth = progressBarBg.clientWidth;
+                const clickX = e.offsetX;
+                const newTime = (clickX / barWidth) * music.duration;
+                music.currentTime = newTime;
+            });
+
+
+            // --- SLIDESHOW LOGIC ---
+            const images = [
+                "foto 1.webp", "foto 2.webp", "foto 3.webp", "foto 4.webp", "foto 5.webp",
+                "foto 6.webp", "foto 7.webp", "foto 8.webp", "foto 9.webp", "foto 10.webp",
+            ];
+            const slideshowContainer = document.getElementById('slideshow');
+            const slidesWrapper = slideshowContainer.querySelector('.slides-wrapper');
+            const dotsContainer = document.getElementById('dots');
+            let currentIndex = 0;
+            let slideInterval;
+
+            // Create slides and dots dynamically
+            images.forEach((src, i) => {
+                const slide = document.createElement('div');
+                slide.className = 'slide';
+                slide.innerHTML = `<img src="${src}" alt="Foto ${i + 1}" onerror="this.src='https://placehold.co/600x400/e63946/white?text=Imagem+N%C3%A3o+Encontrada';">`;
+                slidesWrapper.appendChild(slide);
+
+                const dot = document.createElement('span');
+                dot.className = 'dot';
+                dot.onclick = () => setSlide(i);
+                dotsContainer.appendChild(dot);
+            });
+            
+            const dots = document.querySelectorAll('.dot');
+            
+            function updateSlides() {
+                slidesWrapper.style.transform = `translateX(-${currentIndex * 100}%)`;
+                dots.forEach((dot, i) => {
+                    dot.classList.toggle('active', i === currentIndex);
+                });
+            }
+
+            window.changeSlide = (n) => {
+                currentIndex = (currentIndex + n + images.length) % images.length;
+                updateSlides();
+                resetInterval();
+            }
+
+            window.setSlide = (index) => {
+                currentIndex = index;
+                updateSlides();
+                resetInterval();
+            }
+            
+            function startInterval() {
+                slideInterval = setInterval(() => changeSlide(1), 4000);
+            }
+            
+            function resetInterval() {
+                clearInterval(slideInterval);
+                startInterval();
+            }
+
+            slideshowContainer.addEventListener('mouseenter', () => clearInterval(slideInterval));
+            slideshowContainer.addEventListener('mouseleave', startInterval);
+
+            // --- SWIPE LOGIC FOR MOBILE ---
+            let touchStartX = 0;
+            let touchEndX = 0;
+            slideshowContainer.addEventListener('touchstart', (e) => {
+                touchStartX = e.changedTouches[0].screenX;
+                clearInterval(slideInterval);
+            }, { passive: true });
+
+            slideshowContainer.addEventListener('touchend', (e) => {
+                touchEndX = e.changedTouches[0].screenX;
+                const swipeDistance = touchEndX - touchStartX;
+                if (Math.abs(swipeDistance) > 50) {
+                    changeSlide(swipeDistance < 0 ? 1 : -1);
+                }
+                startInterval();
+            });
+
+            // Initial setup
+            updateSlides();
+            startInterval();
+
+            // --- COUNTER LOGIC ---
+            const inicio = new Date('2023-02-27T00:00:00');
+            const contagemElement = document.getElementById('contador');
+
+            function atualizarContador() {
+                const agora = new Date();
+                let diff = agora - inicio;
+                const anos = agora.getFullYear() - inicio.getFullYear() - (agora.getMonth() < inicio.getMonth() || (agora.getMonth() === inicio.getMonth() && agora.getDate() < inicio.getDate()) ? 1 : 0);
+                let lastAnniversary = new Date(inicio);
+                lastAnniversary.setFullYear(agora.getFullYear());
+                if (agora < lastAnniversary) {
+                    lastAnniversary.setFullYear(agora.getFullYear() - 1);
+                }
+                let meses = agora.getMonth() - lastAnniversary.getMonth();
+                if (meses < 0) meses += 12;
+                if (agora.getDate() < lastAnniversary.getDate()) meses--;
+                
+                let daysSinceLastMonthAnniversary = agora.getDate() - inicio.getDate();
+                if (daysSinceLastMonthAnniversary < 0) {
+                    const prevMonth = new Date(agora.getFullYear(), agora.getMonth(), 0);
+                    daysSinceLastMonthAnniversary += prevMonth.getDate();
+                }
+
+                let tempo = Math.floor(diff / 1000);
+                const horas = Math.floor((tempo % 86400) / 3600);
+                const minutos = Math.floor((tempo % 3600) / 60);
+                const segundos = tempo % 60;
+                
+                contagemElement.innerHTML = `
+                    <div class="tempo"><span>${String(anos).padStart(2, '0')}</span><div class="label">anos</div></div>
+                    <div class="tempo"><span>${String(meses).padStart(2, '0')}</span><div class="label">meses</div></div>
+                    <div class="tempo"><span>${String(daysSinceLastMonthAnniversary).padStart(2, '0')}</span><div class="label">dias</div></div>
+                    <div class="tempo"><span>${String(horas).padStart(2, '0')}</span><div class="label">horas</div></div>
+                    <div class="tempo"><span>${String(minutos).padStart(2, '0')}</span><div class="label">minutos</div></div>
+                    <div class="tempo"><span>${String(segundos).padStart(2, '0')}</span><div class="label">segundos</div></div>
+                `;
+            }
+
+            atualizarContador();
+            setInterval(atualizarContador, 1000);
+        });
+    </script>
+</body>
+</html>
