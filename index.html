@@ -249,37 +249,6 @@
             object-fit: cover;
         }
 
-        .nav-button {
-            cursor: pointer;
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            padding: 16px 12px;
-            color: white;
-            font-weight: bold;
-            font-size: 24px;
-            background-color: rgba(0, 0, 0, 0.2);
-            border: none;
-            user-select: none;
-            z-index: 2;
-            transition: background-color 0.3s;
-            line-height: 1;
-        }
-        
-        .nav-button:hover {
-            background-color: rgba(0,0,0,0.6);
-        }
-
-        .prev {
-            left: 0;
-            border-radius: 0 10px 10px 0;
-        }
-
-        .next {
-            right: 0;
-            border-radius: 10px 0 0 10px;
-        }
-
         .dots-container {
             text-align: center;
             margin-top: 15px;
@@ -409,8 +378,6 @@
             <div class="slides-wrapper">
                  <!-- Images will be injected by JavaScript -->
             </div>
-            <button class="nav-button prev" onclick="changeSlide(-1)">&#10094;</button>
-            <button class="nav-button next" onclick="changeSlide(1)">&#10095;</button>
         </div>
     
         <div class="dots-container" id="dots">
@@ -418,14 +385,14 @@
         </div>
     
         <h2>Meu amor! Que a gente continue se escolhendo todos os dias, com carinho, com riso fácil e com aquele abraço que sempre cabe o mundo inteiro. Amar você é a melhor parte da minha vida, e hoje eu só quero celebrar a sorte de te ter ao meu lado. Te amo!</h2>
-    
+
     
         <h3>Te Amando há...</h3>
     
         <div class="contador" id="contador">
             <!-- Counter will be rendered here -->
         </div>
-        <p class="data-inicio">Desde 27 de fevereiro de 2023</p>
+                <p class="data-inicio">Desde 27 de fevereiro de 2023</p>
     </div>
 
 
@@ -545,7 +512,7 @@
             }
             
             function startInterval() {
-                slideInterval = setInterval(() => changeSlide(1), 4000);
+                slideInterval = setInterval(() => changeSlide(1), 2000); // Change slide every 2 seconds
             }
             
             function resetInterval() {
